@@ -3,8 +3,11 @@ import Search from '../../ui/dashboard/search/search';
 import Pagination from '../../ui/dashboard/pagination/pagination';
 import Link from 'next/link'
 import Image from 'next/image';
+import { fetchUsers } from '../../lib/data';
 
-const UsersPage = () => {
+const UsersPage = async () => {
+  const users = await fetchUsers();
+  console.log(users)
   return (
     <div className={styles.container}>
       <div className={styles.top}>
