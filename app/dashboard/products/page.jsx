@@ -3,8 +3,14 @@ import Search from '../../ui/dashboard/search/search';
 import Pagination from '../../ui/dashboard/pagination/pagination';
 import Link from 'next/link'
 import Image from 'next/image';
+import { fetchProducts } from '../../lib/data';
+import { deleteProduct } from '../../lib/actions';
 
-const ProductsPage = () => {
+const ProductsPage = async ({ searchParams }) => {
+  const query = searchParams?.q || ""; // searchParams will be updated in search component
+  const page = searchParams?.page || 1; // searchParams will be updated in search component
+  const { products, count} = await fetchProducts(query, page);
+
   return (
     <div className={styles.container}>
       <div className={styles.top}>
@@ -25,29 +31,38 @@ const ProductsPage = () => {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>
-              <div className={styles.product}>
-                <Image src="/noproduct.jpg" width={40} height={40} alt='' className={styles.productImage} />
-                IPhone
-              </div>
-            </td>
-            <td>Desc</td>
-            <td>$999</td>
-            <td>13.01.2022</td>
-            <td>72</td>
-            <td>
-              <div className={styles.buttons}>
-                <Link href="/dashboard/products/test">
-                  <button className={`${styles.button} ${styles.view}`}>View</button>
-                </Link>
-                <button className={`${styles.button} ${styles.delete}`}>Delete</button>
-              </div>
-            </td>
-          </tr>
+          {
+            products.map(product => {
+              return (
+                <tr key={product.id}>
+                  <td>
+                    <div className={styles.product}>
+                      <Image src={product.img || '/noproduct.jpg'} width={40} height={40} alt='' className={styles.productImage} />
+                      {product.title}
+                    </div>
+                  </td>
+                  <td> {product.desc}</td>
+                  <td> {product.price}</td>
+                  <td> {product.createdAt?.toString().slice(4, 16)}</td>
+                  <td> {product.stock}</td>
+                  <td>
+                    <div className={styles.buttons}>
+                      <Link href={`/dashboard/products/${product.id}`}>
+                        <button className={`${styles.button} ${styles.view}`}>View</button>
+                      </Link>
+                      <form action={deleteProduct}>
+                        <input type="hidden" name="id" value={product.id} />
+                        <button className={`${styles.button} ${styles.delete}`}>Delete</button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              )
+            })
+          }
         </tbody>
       </table>
-      <Pagination />
+      <Pagination count={count} />
     </div>
   )
 }
