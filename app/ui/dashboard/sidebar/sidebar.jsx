@@ -13,6 +13,7 @@ import {
 import styles from './sidebar.module.css';
 import NavLink from '../menuLink/menuLink';
 import Image from 'next/image';
+import { auth, signOut } from '../../../auth';
 
 const menuItems = [
   {
@@ -77,11 +78,13 @@ const menuItems = [
   },
 ];
 
-const Sidebar = () => {
+const Sidebar = async () => {
+  const { user } = await auth();
+
   return (
     <div className={styles.container}>
       <div className={styles.user}>
-        <Image src="/noavatar.png" alt="" width="50" height="50" className={styles.userImage} />
+        <Image src={ user.img || "/noavatar.png"} alt="" width="50" height="50" className={styles.userImage} />
         <div className={styles.userDetail}>
           <span className={styles.username}>Kiwi</span>
           <span className={styles.userTitle}>Administrator</span>
@@ -102,10 +105,15 @@ const Sidebar = () => {
         ))
       }
       </ul>
-      <button className={styles.logout}>
-        <MdLogout />
-        Logout
-      </button>
+      <form action={async () => {
+        "use server"
+        await signOut()
+      }}>
+        <button className={styles.logout}>
+          <MdLogout />
+          Logout
+        </button>
+      </form>
     </div>
   )
 }

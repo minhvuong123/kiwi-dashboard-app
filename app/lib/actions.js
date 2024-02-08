@@ -129,3 +129,18 @@ export const updateProduct = async (formData) => {
   revalidatePath("/dashboard/products")
   redirect('/dashboard/products');
 }
+
+import { signIn } from '../auth';
+
+export const authenticate = async (formData) => {
+  const { username, password } = Object.fromEntries(formData);
+  
+  try {
+    await signIn('credentials', { username, password})
+  } catch (error) {
+    console.log(error);
+    // throw new Error(error); => will display Error: NEXT_REDIRECT 
+
+    throw error;
+  }
+}
