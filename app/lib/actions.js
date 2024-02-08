@@ -138,8 +138,11 @@ export const authenticate = async (formData) => {
   try {
     await signIn('credentials', { username, password})
   } catch (error) {
-    console.log(error);
-    // throw new Error(error); => will display Error: NEXT_REDIRECT 
+    console.log("error.message: ", error.message);
+
+    if (error.message.includes("CredentialsSignin")) {
+      return "Wrong Credentials";
+    }
 
     throw error;
   }
